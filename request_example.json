@@ -1,0 +1,27 @@
+{
+  "flighNumber": "495",
+  "boardingTime": "",
+  "boardingLocation": {
+    "longitude": -22.908055,
+    "latitude": -43.164189
+  },
+  "departurePlace": "Congonhas",
+  "departureCode": "SBSP",
+  "arrivalPlace": "Jacarepaguá",
+  "arrivalCode": "SBJR",
+  "departureTime": "18:00",
+  "qtySeats": 1,
+  "aircraftPrefix": "PT-MJD",
+  "operatorName": "Icon Aviation",
+  "passengerName": "John Doe",
+  "aircraftModel": "King Air B200",
+  "documents":[{
+    "label": "RG",
+    "value": "9999999-X"
+    },
+    {
+    "label": "CPF",
+    "value": "999.999.999-99"
+    }],
+  "departureDetails": "Aeroporto de Congonhas\nLounge da Icon Aviation\nAv. Jurandir, 856 - Jardim Cecy, São Paulo - SP, 04072-000\nhttps://goo.gl/maps/WPqFM3VuQHz"
+}

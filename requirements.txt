@@ -1,0 +1,5 @@
+Flask
+jsonpickle
+jsonschema
+boto3
+wallet-py3k
