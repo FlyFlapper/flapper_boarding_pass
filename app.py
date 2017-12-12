@@ -7,7 +7,7 @@
 
 from flask import Flask, jsonify
 from flask import request
-from flapper_passbook.models import FprBoardingPass
+from flapper_passbook.controllers import FprBoardingPassController
 
 app = Flask(__name__)
 
@@ -15,18 +15,17 @@ app = Flask(__name__)
 # Boarding pass web methods
 # ---------------------------------------
 
-@app.route('/boarding_pass', methods=['GET'])
-def get_boarding_pass():
-    boarding_pass = FprBoardingPass(request.json)
-    boarding_pass.setup_boarding_pass_fields()
-    boarding_pass.create_pass()
-    return 'OK'
 
 @app.route('/boarding_pass', methods=['POST'])
-def create_boarding_pass():
-    #passbook = FprPassbook(request.json)
-    #passbook.save()
+def get_boarding_pass():
+    FprBoardingPassController.create_boarding_pass(request.json)
     return 'OK'
+
+
+@app.route('/boarding_pass', methods=['GET'])
+def create_boarding_pass():
+    return 'OK'
+
 
 # Run Config
 if __name__ == '__main__':
