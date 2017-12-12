@@ -113,3 +113,6 @@ ENV/
 # Config file
 config.py
 
+# Others
+.DS_Store
+

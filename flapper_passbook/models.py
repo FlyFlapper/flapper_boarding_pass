@@ -14,7 +14,6 @@ import datetime
 import dateutil.parser
 
 
-
 class FprBoardingPass(BoardingPass):
 
     # Constructor
@@ -34,7 +33,7 @@ class FprBoardingPass(BoardingPass):
         # Fields
         self.relevant_date = None
         self.locations = []
-        self.message = None
+        self.full_name = None
         self.flight_number = None
         self.departing_time = None
         self.boarding_time = None
@@ -73,7 +72,11 @@ class FprBoardingPass(BoardingPass):
         self.seats_qty = len(self.passengers)
         self.__set_barcode()
         self.__set_boarding_time()
+        self.__set_full_name()
+        self.__set_departing_time()
+
         self.__setup_boarding_pass_fields()
+
 
     def __set_locations(self, locations):
         for location in locations:
@@ -83,11 +86,15 @@ class FprBoardingPass(BoardingPass):
         for passenger in passsengers:
             self.passengers.append(Passenger(passenger.get('fullName'), passenger.get('documents')))
 
+    def __set_full_name(self):
+        self.full_name = self.passengers[0].full_name
+
     def __set_boarding_time(self):
-        self.boarding_time = dateutil.parser.parse(self.relevant_date) - datetime.timedelta(minutes=30)
+        self.boarding_time = (dateutil.parser.parse(self.relevant_date) -
+                              datetime.timedelta(minutes=30)).strftime('%H:%M')
 
     def __set_departing_time(self):
-        self.departing_time = dateutil.parser.parse(self.relevant_date)
+        self.departing_time = (dateutil.parser.parse(self.relevant_date)).strftime('%H:%M')
 
     def __set_barcode(self):
         self.barcode = self.departure_code + self.arrival_code + " "\
@@ -120,8 +127,7 @@ class FprBoardingPass(BoardingPass):
                 passengers_details += passenger.full_name + '\n'
                 for document in passenger.documents:
                     passengers_details += document.type + ': ' + document.number + '\n'
-                passengers_details += '\n\n'
-            passengers_details += '\n'
+                passengers_details += '\n'
             self.addBackField('passengers', passengers_details, 'PASSENGERS')
 
 
@@ -130,37 +136,44 @@ class FprPass(Pass):
     # Constructor
     def __init__(self, boarding_pass):
         self.config = Config()
-        Pass.__init__(boarding_pass, passTypeIdentifier=self.config.PASS_TYPE_IDENTIFIER, organizationName=self.config.ORGANIZATION_NAME,
+        Pass.__init__(self,
+                      boarding_pass,
+                      passTypeIdentifier=self.config.PASS_TYPE_IDENTIFIER,
+                      organizationName=self.config.ORGANIZATION_NAME,
                       teamIdentifier=self.config.TEAM_IDENTIFIER)
-        self.serialNumber = self.get_serial_number()
+        self.serialNumber = self.__get_serial_number()
         self.barcode = Barcode(message=boarding_pass.barcode, format=BarcodeFormat.QR)
-        self.addFile('icon.png', open(r'/opt/project/flapper_passbook/icon.png', 'rb'))
-        self.addFile('icon@2x.png', open(r'/opt/project/flapper_passbook/icon@2x.png', 'rb'))
-        self.addFile('logo.png', open(r'/opt/project/flapper_passbook/logo.png', 'rb'))
-        self.addFile('logo@2x.png', open(r'/opt/project/flapper_passbook/logo@2x.png', 'rb'))
-        self.foregroundColor = "rgb(255, 255, 255)"
-        self.backgroundColor = "rgb(38, 29, 62)"
-        self.labelColor = "rgb(13, 179, 163)"
+        self.addFile('icon.png', open(self.config.IMAGES_PATH + '/icon.png', 'rb'))
+        self.addFile('icon@2x.png', open(self.config.IMAGES_PATH + '/icon@2x.png', 'rb'))
+        self.addFile('logo.png', open(self.config.IMAGES_PATH + '/logo.png', 'rb'))
+        self.addFile('logo@2x.png', open(self.config.IMAGES_PATH + '/logo@2x.png', 'rb'))
+        self.foregroundColor = self.config.COLOR_FOREGROUND
+        self.backgroundColor = self.config.COLOR_BACKGROUND
+        self.labelColor = self.config.COLOR_LABEL
 
-    def get_serial_number(self,
-                          size=9,
-                          chars=string.ascii_uppercase+string.digits+string.ascii_lowercase):
+    def __get_serial_number(self,
+                            size=9,
+                            chars=string.ascii_uppercase+string.digits+string.ascii_lowercase):
         return ''.join(random.choice(chars) for _ in range(size))
 
     def get_pass_filename(self):
         pass
 
     def generate(self):
-        self.create(self.config.PROJECT_PATH + '/certificates/certificate.pem',
-                    self.config.PROJECT_PATH + '/certificates/key.pem',
-                    self.config.PROJECT_PATH + '/certificates/wwdr.pem',
+        self.create(self.config.CERTIFICATES_PATH + '/certificate.pem',
+                    self.config.CERTIFICATES_PATH + '/key.pem',
+                    self.config.CERTIFICATES_PATH + '/wwdr.pem',
                     self.config.PASSFILE_PASSWORD,
-                    self.config.PROJECT_PATH + '/opt/project/flapper_passbook/test.pkpass')
+                    self.config.FILES_OUTPUT + '/test.pkpass')
 
     # TODO:call boto3
     def save(self):
         return 1
 
+
+# ---------------------------------------
+# Aux Classes
+# ---------------------------------------
 
 class Passenger():
 

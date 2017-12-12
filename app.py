@@ -22,11 +22,6 @@ def get_boarding_pass():
     return 'OK'
 
 
-@app.route('/boarding_pass', methods=['GET'])
-def create_boarding_pass():
-    return 'OK'
-
-
 # Run Config
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
