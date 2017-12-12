@@ -1,16 +1,20 @@
 {
   "flightNumber": "495",
   "boardingTime": "2017-12-26T16:40-03:00",
-  "boardingLocation": {
+  "locations": [
+    {
     "longitude": -22.908055,
     "latitude": -43.164189
-  },
+    },
+    {
+    "longitude": -22.908055,
+    "latitude": -43.164189
+    }
+  ],
   "departurePlace": "Congonhas",
   "departureCode": "SBSP",
   "arrivalPlace": "Jacarepaguá",
   "arrivalCode": "SBJR",
-  "departureTime": "18:00",
-  "qtySeats": 1,
   "aircraftPrefix": "PT-MJD",
   "operatorName": "Icon Aviation",
   "passengerName": "John Doe",

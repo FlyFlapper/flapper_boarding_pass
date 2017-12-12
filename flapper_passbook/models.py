@@ -34,10 +34,12 @@ class FprBoardingPass(BoardingPass):
         #Config
         self.config = Config()
 
+        self.init_boarding_pass(json)
+
         # Header
         self.request_body = None
         self.relevant_date = None
-        self.location = None
+        self.locations = None
         self.message = None
 
         #Fields
@@ -49,9 +51,9 @@ class FprBoardingPass(BoardingPass):
         self.arrival_place = None
         self.arrival_code = None
         self.seats_qty = None
-        self.prefix = None
-        self.operator_name = None
+        self.aircraft_prefix = None
         self.aircraft_model = None
+        self.operator_name = None
         self.passengers = [Passenger, ]
         self.departure_details = None
 
@@ -61,51 +63,60 @@ class FprBoardingPass(BoardingPass):
         :param json:
         """
         obj = json.loads(json)
+        self.flight_number = obj.flightNumber
+        self.relevant_date = obj.boardingTime
+        self.set_locations(json.locations)
+        self.departure_place = obj.departurePlace
+        self.departure_code = obj.departureCode
+        self.arrival_place = obj.arrivalPlace
+        self.arrival_code = obj.arrivalCode
+        self.aircraft_prefix = obj.aircraftPrefix
+        self.aircraft_model = obj.aircraftModel
+        self.operator_name = obj.operatorName
+        self.set_passengers(json.passengers)
+        self.departure_details = obj.departureDetails
+
+    def set_locations(self, locations):
+        for location in locations:
+            self.locations.append(Location(location.latitude, location.longitude))
+
+    def set_passengers(self, passsengers):
+        for passenger in passsengers:
+            self.passengers.append(Passenger(passenger.fullName, passenger.documents))
 
     def setup_boarding_pass_fields(self):
-        # self.addHeaderField('boardingTime', self.boarding_time, 'BOARDING TIME')
-        # self.addPrimaryField('departurePlace',self.departure_code, self.departure_place)
-        # self.addPrimaryField('arrivalPlace', self.arrival_code, self.arrival_place)
-        # self.addSecondaryField('passenger', self.passengers[0].full_name, 'PASSENGER')
-        # self.addAuxiliaryField('departingTime', self.departing_time, 'DEPARTURE')
-        # self.addAuxiliaryField('seats', self.seats_qty, 'SEATS')
-        # self.addAuxiliaryField('prefix', self.prefix, 'PREFIX')
-        # self.addAuxiliaryField('operator', self.operator_name, 'OPERATOR')
-        # self.addBackField('aircraft', self.aircraft_model, 'AIRCRAFT')
-        # self.add_passengers()
-        # self.addBackField('departureDetails', self.departure_details, 'DEPARTURE DETAILS')
-        self.addHeaderField('boardingTime', '2017-12-08T16:40-03:00', 'BOARDING TIME')
-        self.addPrimaryField('departurePlace', 'SBSP', 'Congonhas')
-        self.addPrimaryField('arrivalPlace', 'SDAG', 'Angra dos Reis')
-        self.addSecondaryField('passenger', 'Arthur Virzin', 'PASSENGER')
-        self.addAuxiliaryField('departingTime', '18:00', 'DEPARTURE')
-        self.addAuxiliaryField('seats', '2', 'SEATS')
-        self.addAuxiliaryField('prefix', 'PR-ATC', 'PREFIX')
-        self.addAuxiliaryField('operator', 'Flapper', 'OPERATOR')
-        self.addBackField('aircraft', 'King Air B200', 'AIRCRAFT')
-        #self.add_passengers()
-        self.addBackField('departureDetails', 'Teste', 'DEPARTURE DETAILS')
+        self.addHeaderField('boardingTime', self.boarding_time, 'BOARDING TIME')
+        self.addPrimaryField('departurePlace',self.departure_code, self.departure_place)
+        self.addPrimaryField('arrivalPlace', self.arrival_code, self.arrival_place)
+        self.addSecondaryField('passenger', self.passengers[0].full_name, 'PASSENGER')
+        self.addAuxiliaryField('departingTime', self.departing_time, 'DEPARTURE')
+        self.addAuxiliaryField('seats', self.seats_qty, 'SEATS')
+        self.addAuxiliaryField('prefix', self.aircraft_prefix, 'PREFIX')
+        self.addAuxiliaryField('operator', self.operator_name, 'OPERATOR')
+        self.addBackField('aircraft', self.aircraft_model, 'AIRCRAFT')
+        self.add_passengers()
+        self.addBackField('departureDetails', self.departure_details, 'DEPARTURE DETAILS')
 
-    # def create_pass(self):
-    #     passfile = Pass(self, passTypeIdentifier=self.config.PASS_TYPE_IDENTIFIER,
-    #                     organizationName=self.config.ORGANIZATION_NAME,
-    #                     teamIdentifier=self.config.TEAM_IDENTIFIER)
-    #     passfile.serialNumber = self.get_serial_number()
-    #     passfile.relevantDate = '2017-12-08T16:40-03:00'
-    #     passfile.barcode = Barcode(message='blablabla e372438427y4 dahsdgasidhas lasgdiavdajsdjba',
-    #                                format=BarcodeFormat.QR)
-    #     passfile.addFile('icon.png', open(r'/opt/project/flapper_passbook/icon.png', 'rb'))
-    #     passfile.addFile('icon@2x.png', open(r'/opt/project/flapper_passbook/icon@2x.png', 'rb'))
-    #     passfile.addFile('logo.png', open(r'/opt/project/flapper_passbook/logo.png', 'rb'))
-    #     passfile.addFile('logo@2x.png', open(r'/opt/project/flapper_passbook/logo@2x.png', 'rb'))
-    #     passfile.foregroundColor = "rgb(255, 255, 255)"
-    #     passfile.backgroundColor = "rgb(38, 29, 62)"
-    #     passfile.labelColor = "rgb(13, 179, 163)"
-    #     passfile.create(self.config.PROJECT_PATH + '/certificates/certificate.pem',
-    #                     self.config.PROJECT_PATH + '/opt/project/certificates/key.pem',
-    #                     self.config.PROJECT_PATH + '/certificates/wwdr.pem',
-    #                     self.config.PASSFILE_PASSWORD,
-    #                     self.config.PROJECT_PATH + '/opt/project/flapper_passbook/test.pkpass')
+    def create_pass(self):
+        passfile = Pass(self, passTypeIdentifier=self.config.PASS_TYPE_IDENTIFIER,
+                        organizationName=self.config.ORGANIZATION_NAME,
+                        teamIdentifier=self.config.TEAM_IDENTIFIER)
+        passfile.serialNumber = self.get_serial_number()
+        passfile.relevantDate = self.relevant_date
+        passfile.barcode = Barcode(message='blablabla e372438427y4 dahsdgasidhas lasgdiavdajsdjba',
+                                   format=BarcodeFormat.QR)
+        passfile.addFile('icon.png', open(r'/opt/project/flapper_passbook/icon.png', 'rb'))
+        passfile.addFile('icon@2x.png', open(r'/opt/project/flapper_passbook/icon@2x.png', 'rb'))
+        passfile.addFile('logo.png', open(r'/opt/project/flapper_passbook/logo.png', 'rb'))
+        passfile.addFile('logo@2x.png', open(r'/opt/project/flapper_passbook/logo@2x.png', 'rb'))
+        passfile.foregroundColor = "rgb(255, 255, 255)"
+        passfile.backgroundColor = "rgb(38, 29, 62)"
+        passfile.labelColor = "rgb(13, 179, 163)"
+        passfile.create(self.config.PROJECT_PATH + '/certificates/certificate.pem',
+                        self.config.PROJECT_PATH + '/certificates/key.pem',
+                        self.config.PROJECT_PATH + '/certificates/wwdr.pem',
+                        self.config.PASSFILE_PASSWORD,
+                        self.config.PROJECT_PATH + '/opt/project/flapper_passbook/test.pkpass')
 
     def get_serial_number(self,
                           size=9,
@@ -129,14 +140,13 @@ class FprBoardingPass(BoardingPass):
             self.addBackField('passengers', passengers_details, 'PASSENGERS')
 
 
-
 class FprPass(Pass):
 
     # Constructor
     def __init__(self):
         self.config = Config()
-        Pass.__init__(self, passTypeIdentifier=config.PASS_TYPE_IDENTIFIER, organizationName=config.ORGANIZATION_NAME,
-                      teamIdentifier=config.TEAM_IDENTIFIER)
+        Pass.__init__(self, passTypeIdentifier=self.config.PASS_TYPE_IDENTIFIER, organizationName=self.config.ORGANIZATION_NAME,
+                      teamIdentifier=self.config.TEAM_IDENTIFIER)
         self.serialNumber = self.get_serial_number()
         self.barcode = Barcode(message=barcode, format=BarcodeFormat.QR)
         self.addFile('icon.png', open(r'/opt/project/flapper_passbook/icon.png', 'rb'))
@@ -157,8 +167,8 @@ class FprPass(Pass):
 
     def generate(self):
         self.create(self.config.PROJECT_PATH + '/certificates/certificate.pem',
-                    self.config.PROJECT_PATH + '/opt/project/certificates/key.pem',
-                    self.config.PROJECT_PATH + '/opt/project//certificates/wwdr.pem',
+                    self.config.PROJECT_PATH + '/certificates/key.pem',
+                    self.config.PROJECT_PATH + '/certificates/wwdr.pem',
                     self.config.PASSFILE_PASSWORD,
                     self.config.PROJECT_PATH + '/opt/project/flapper_passbook/test.pkpass')
 
@@ -170,22 +180,27 @@ class FprPass(Pass):
 class Passenger():
 
     # Constructor
-    def __init__(self):
-        self.full_name = None
+    def __init__(self, full_name, documents):
+        self.full_name = full_name
         self.documents = [Document, ]
+        self.set_documents(documents)
+
+    def set_documents(self, documents):
+        for doc in documents:
+            self.documents.append(Document(doc.type, doc.number))
 
 
 class Document():
 
     # Constructor
-    def __init__(self):
-        self.type = None
-        self.number = None
+    def __init__(self, type, number):
+        self.type = type
+        self.number = number
 
 
 class Location():
 
     # Constructor
-    def __init__(self):
-        self.latitude = None
-        self.longitude = None
+    def __init__(self, latitude=None, longitude=None):
+        self.latitude = latitude
+        self.longitude = longitude
