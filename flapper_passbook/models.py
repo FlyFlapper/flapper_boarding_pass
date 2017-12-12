@@ -12,6 +12,7 @@ import random
 import string
 import datetime
 import dateutil.parser
+import boto3
 
 
 class FprBoardingPass(BoardingPass):
@@ -142,6 +143,7 @@ class FprPass(Pass):
                       organizationName=self.config.ORGANIZATION_NAME,
                       teamIdentifier=self.config.TEAM_IDENTIFIER)
         self.serialNumber = self.__get_serial_number()
+        self.filename = self.__get_pass_filename(boarding_pass.relevant_date, boarding_pass.flight_number, boarding_pass.full_name)
         self.barcode = Barcode(message=boarding_pass.barcode, format=BarcodeFormat.QR)
         self.addFile('icon.png', open(self.config.IMAGES_PATH + '/icon.png', 'rb'))
         self.addFile('icon@2x.png', open(self.config.IMAGES_PATH + '/icon@2x.png', 'rb'))
@@ -156,7 +158,7 @@ class FprPass(Pass):
                             chars=string.ascii_uppercase+string.digits+string.ascii_lowercase):
         return ''.join(random.choice(chars) for _ in range(size))
 
-    def get_pass_filename(self):
+    def __get_pass_filename(self, date, flight_number, full_name):
         pass
 
     def generate(self):
@@ -167,8 +169,15 @@ class FprPass(Pass):
                     self.config.FILES_OUTPUT + '/test.pkpass')
 
     # TODO:call boto3
-    def save(self):
-        return 1
+    def save_to_s3(self, file):
+        client = boto3.client(
+            's3',
+            aws_access_key_id=self.config.AWS_ACCESS_KEY,
+            aws_secret_access_key=self.config.AWS_SECRET_KEY,
+            aws_session_token=self.config.AWS_SESSION_TOKEN,
+        )
+        response = client.list_buckets()
+        print(response)
 
 
 # ---------------------------------------
