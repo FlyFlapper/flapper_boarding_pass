@@ -6,13 +6,14 @@
 # --------------------------------------------------
 
 from jsonschema import Draft3Validator
-from wallet.models import Pass, Barcode, BoardingPass, BarcodeFormat
+from wallet.models import Pass, Barcode, BoardingPass, BarcodeFormat, Alignment
 from config import Config
 import random
 import string
 import datetime
 import dateutil.parser
 import boto3
+import os
 
 
 class FprBoardingPass(BoardingPass):
@@ -92,7 +93,7 @@ class FprBoardingPass(BoardingPass):
 
     def __set_boarding_time(self):
         self.boarding_time = (dateutil.parser.parse(self.relevant_date) -
-                              datetime.timedelta(minutes=30)).strftime('%H:%M')
+                              datetime.timedelta(minutes=30)).strftime('%H:%M %d/%m')
 
     def __set_departing_time(self):
         self.departing_time = (dateutil.parser.parse(self.relevant_date)).strftime('%H:%M')
@@ -107,6 +108,8 @@ class FprBoardingPass(BoardingPass):
         self.addPrimaryField('departurePlace',self.departure_code, self.departure_place)
         self.addPrimaryField('arrivalPlace', self.arrival_code, self.arrival_place)
         self.addSecondaryField('passenger', self.passengers[0].full_name, 'PASSENGER')
+        #TODO: Fix this ugliest workaround
+        self.primaryFields[1].textAlignment = Alignment.RIGHT
         self.addAuxiliaryField('departingTime', self.departing_time, 'DEPARTURE')
         self.addAuxiliaryField('seats', self.seats_qty, 'SEATS')
         self.addAuxiliaryField('prefix', self.aircraft_prefix, 'PREFIX')
@@ -116,8 +119,7 @@ class FprBoardingPass(BoardingPass):
         self.addBackField('departureDetails', self.departure_details, 'DEPARTURE DETAILS')
 
     @staticmethod
-    def set_serial_number(self,
-                          size=9,
+    def set_serial_number(size=9,
                           chars=string.ascii_uppercase+string.digits+string.ascii_lowercase):
         return ''.join(random.choice(chars) for _ in range(size))
 
@@ -143,7 +145,10 @@ class FprPass(Pass):
                       organizationName=self.config.ORGANIZATION_NAME,
                       teamIdentifier=self.config.TEAM_IDENTIFIER)
         self.serialNumber = self.__get_serial_number()
-        self.filename = self.__get_pass_filename(boarding_pass.relevant_date, boarding_pass.flight_number, boarding_pass.full_name)
+        self.file_name = self.__get_pass_file_name(boarding_pass.relevant_date,
+                                                   boarding_pass.flight_number,
+                                                   boarding_pass.full_name)
+        self.folder_name = (datetime.datetime.now()).strftime('%Y%m%d')
         self.barcode = Barcode(message=boarding_pass.barcode, format=BarcodeFormat.QR)
         self.addFile('icon.png', open(self.config.IMAGES_PATH + '/icon.png', 'rb'))
         self.addFile('icon@2x.png', open(self.config.IMAGES_PATH + '/icon@2x.png', 'rb'))
@@ -158,27 +163,30 @@ class FprPass(Pass):
                             chars=string.ascii_uppercase+string.digits+string.ascii_lowercase):
         return ''.join(random.choice(chars) for _ in range(size))
 
-    def __get_pass_filename(self, date, flight_number, full_name):
-        pass
+    def __get_pass_file_name(self, date, flight_number, full_name):
+        filename = (dateutil.parser.parse(date)).strftime('%Y%m%d')
+        filename += '_' + str(flight_number)
+        filename += '_' + (full_name.replace(' ', '_')).lower() + '.pkpass'
+        return filename
 
     def generate(self):
-        self.create(self.config.CERTIFICATES_PATH + '/certificate.pem',
-                    self.config.CERTIFICATES_PATH + '/key.pem',
-                    self.config.CERTIFICATES_PATH + '/wwdr.pem',
-                    self.config.PASSFILE_PASSWORD,
-                    self.config.FILES_OUTPUT + '/test.pkpass')
+        return self.create(self.config.CERTIFICATES_PATH + '/certificate.pem',
+                           self.config.CERTIFICATES_PATH + '/key.pem',
+                           self.config.CERTIFICATES_PATH + '/wwdr.pem',
+                           self.config.PASSFILE_PASSWORD,
+                           self.config.FILES_OUTPUT + '/' + self.file_name)
 
-    # TODO:call boto3
-    def save_to_s3(self, file):
+    def save_to_s3(self):
         client = boto3.client(
             's3',
             aws_access_key_id=self.config.AWS_ACCESS_KEY,
-            aws_secret_access_key=self.config.AWS_SECRET_KEY,
-            aws_session_token=self.config.AWS_SESSION_TOKEN,
+            aws_secret_access_key=self.config.AWS_SECRET_KEY
         )
-        response = client.list_buckets()
-        print(response)
-
+        with open(self.config.FILES_OUTPUT + '/' + self.file_name, 'rb') as data:
+            client.upload_fileobj(data, self.config.S3_BUCKET_NAME, self.folder_name + '/' + self.file_name,
+                                  ExtraArgs={'ACL': 'public-read'})
+        #os.remove(self.config.FILES_OUTPUT + '/' + self.file_name)
+        print(self.file_name + 'was saved to ' + self.config.S3_BUCKET_NAME + '/' + self.folder_name + '.')
 
 # ---------------------------------------
 # Aux Classes

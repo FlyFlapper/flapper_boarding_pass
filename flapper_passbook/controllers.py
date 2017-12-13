@@ -15,3 +15,5 @@ class FprBoardingPassController():
         boarding_pass = FprBoardingPass(json_body)
         flapper_pass = FprPass(boarding_pass)
         flapper_pass.generate()
+        #flapper_pass.save_to_s3()
+
