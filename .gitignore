@@ -114,5 +114,4 @@ config.py
 
 # Others
 .DS_Store
-/outpu/*.pkpass
-
+/output/*.pkpass
