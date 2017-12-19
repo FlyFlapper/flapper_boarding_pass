@@ -104,8 +104,7 @@ ENV/
 .idea/
 
 # Certificates
-/certificates
-.pem
+/certificates/*.pem
 
 # Generated Passes
 *.pkpass
@@ -115,4 +114,5 @@ config.py
 
 # Others
 .DS_Store
+/outpu/*.pkpass
 
