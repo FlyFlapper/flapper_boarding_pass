@@ -7,7 +7,7 @@
 
 from flask import Flask, jsonify
 from flask import request
-from flapper_passbook.controllers import FprBoardingPassController
+from flapper_boarding_pass.controllers import FprBoardingPassController
 
 app = Flask(__name__)
 

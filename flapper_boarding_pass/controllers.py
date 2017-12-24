@@ -5,7 +5,7 @@
 # Time: 21:39
 # --------------------------------------------------
 
-from flapper_passbook.models import FprBoardingPass, FprPass
+from flapper_boarding_pass.models import FprBoardingPass, FprPass
 
 
 class FprBoardingPassController():
