@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Flapper Boarding Pass",
+  "description": "Flapper boarding pass",
+  "type": "object",
+  "properties":{
+    "flightNumber": { "type": "string"},
+    "boardingTime": { "type": "string"},
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "latitude": { "type": "number"},
+    "longitude": { "type": "number"},
+    "departurePlace": { "type": "string"},
+    "departureCode": { "type": "string"},
+    "arrivalPlace": { "type": "string"},
+    "arrivalCode": { "type": "string"},
+    "aircraftPrefix": { "type": "string"},
+    "operatorName": { "type": "string"},
+    "aircraftModel": { "type": "string"},
+    "departureDetails": { "type": "string"},
+    "passengers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    }
+  },
+	"required": ["flightNumber", "boardingTime", "departurePlace", "departureCode", "arrivalPlace", "arrivalCode",
+      "aircraftPrefix", "operatorName", "aircraftModel", "departureDetails", "passengers"]
+}

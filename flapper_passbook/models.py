@@ -5,7 +5,7 @@
 # Time: 21:39
 # --------------------------------------------------
 
-from jsonschema import Draft3Validator
+from jsonschema import Draft4Validator
 from wallet.models import Pass, Barcode, BoardingPass, BarcodeFormat, Alignment
 from config import Config
 import random
@@ -13,24 +13,22 @@ import string
 import datetime
 import dateutil.parser
 import boto3
-import os
+import json
 
 
 class FprBoardingPass(BoardingPass):
 
     # Constructor
-    def __init__(self, json):
+    def __init__(self, json_content):
 
         BoardingPass.__init__(self)
 
-        # TODO: Implement some schema validation
-        # if Draft3Validator(self.schema).is_valid(json):
-        #     self.init_boarding_pass(json);
-        # else:
-        #     print("Invalid JSON.")
-        #     raise ImportError
-
         self.config = Config()
+        schema = json.loads(open(self.config.PROJECT_PATH + 'schemas/create_boarding_pass.json').read())
+
+        if not Draft4Validator(schema).is_valid(json_content):
+            print("Invalid JSON.")
+            raise ImportError
 
         # Fields
         self.relevant_date = None
@@ -52,7 +50,7 @@ class FprBoardingPass(BoardingPass):
         self.barcode = None
 
         # Initializes properties
-        self.__init_boarding_pass(json)
+        self.__init_boarding_pass(json_content)
 
     def __init_boarding_pass(self, json):
         """
