@@ -25,14 +25,16 @@
     "passengers": {
       "type": "array",
       "items": {
-        "type": "object"
-      },
-      "minItems": 1
-    },
-    "documents": {
-      "type": "array",
-      "items": {
-        "type": "object"
+        "type": "object",
+       	"properties": {
+		"documents": {
+		"type": "array",
+ 		"items": {
+   			"type": "object"
+		},
+        "minItems": 1
+	}
+}
       },
       "minItems": 1
     }
