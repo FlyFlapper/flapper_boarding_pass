@@ -19,7 +19,7 @@ app = Flask(__name__)
 @app.route('/boarding_pass', methods=['POST'])
 def get_boarding_pass():
     boarding_pass_controller = FprBoardingPassController()
-    response = boarding_pass_controller.create_boarding_pass(request.json)
+    boarding_pass_controller.create_boarding_pass(request.json)
     return 'OK'
 
 

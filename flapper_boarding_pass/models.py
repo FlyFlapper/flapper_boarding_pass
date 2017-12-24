@@ -158,7 +158,6 @@ class FprBoardingPass(BoardingPass):
                 passengers_details += '\n'
             self.addBackField('passengers', passengers_details, 'PASSENGERS')
 
-        Initializes Flapper pass from Boarding Pass object
 class FprPass(Pass):
 
     # Constructor
@@ -173,7 +172,7 @@ class FprPass(Pass):
                       passTypeIdentifier=self.config.PASS_TYPE_IDENTIFIER,
                       organizationName=self.config.ORGANIZATION_NAME,
                       teamIdentifier=self.config.TEAM_IDENTIFIER)
-        self.serialNumber = self.       Gets serial number __get_serial_number()
+        self.serialNumber = self.__get_serial_number()
         self.file_name = self.__get_pass_file_name(boarding_pass.relevant_date,
                                                    boarding_pass.flight_number,
                                                    boarding_pass.full_name)

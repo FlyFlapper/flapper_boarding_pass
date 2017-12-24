@@ -1,4 +1,4 @@
-# Flapper Passbook
+# Flapper Boarding Pass
 Microservice that generates Flapper boarding passes.
 
 **Introduction**
