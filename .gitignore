@@ -110,7 +110,7 @@ ENV/
 *.pkpass
 
 # Config file
-config.py
+# config.py
 
 # Others
 .DS_Store

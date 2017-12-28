@@ -1,0 +1,25 @@
+# --------------------------------------------------
+# Passbook - Config class
+# Name: Arthur Trujillo Virzin
+# Date: 21/11/17
+# Time: 16:12
+# --------------------------------------------------
+
+
+class Config(object):
+    PASS_TYPE_IDENTIFIER = 'PASS_TYPE_IDENTIFIER'
+    TEAM_IDENTIFIER = 'TEAM_IDENTIFIER'
+    AUTHENTICATION_TOKEN = 'AUTHENTICATION_TOKEN'
+    WEB_SERVICE_URL = 'WEB_SERVICE_URL'
+    ORGANIZATION_NAME = 'ORGANIZATION_NAME'
+    PASSFILE_PASSWORD = 'PASSFILE_PASSWORD'
+    PROJECT_PATH = 'PROJECT_PATH'
+    CERTIFICATES_PATH = 'CERTIFICATES_PATH'
+    IMAGES_PATH = 'IMAGES_PATH'
+    FILES_OUTPUT = 'FILES_OUTPUT'
+    COLOR_BACKGROUND = 'rgb(39, 53, 67)'
+    COLOR_LABEL = 'rgb(65, 192, 176)'
+    COLOR_FOREGROUND = 'rgb(255, 255, 255)'
+    AWS_ACCESS_KEY = 'AWS_ACCESS_KEY'
+    AWS_SECRET_KEY = 'AWS_SECRET_KEY'
+    S3_BUCKET_NAME = 'S3_BUCKET_NAME'

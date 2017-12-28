@@ -293,4 +293,21 @@ class Respose:
 
     # Constructor
     def __init__(self):
-        self.content_body = {}
+        self.content_body = {
+            'result': {
+                'status': None,
+                'message': None
+            }
+        }
+
+    def set_result(self, is_success=False):
+        if is_success:
+            self.content_body['result']['status'] = 0
+            self.content_body['result']['message'] = 'OK'
+        else:
+            self.content_body['result']['status'] = 600
+            self.content_body['result']['message'] = 'Json is invalid.'
+
+    def add_object(self, object):
+        if isinstance(object, dict):
+            self.content_body['boardingPass'] = object

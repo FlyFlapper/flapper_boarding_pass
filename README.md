@@ -16,7 +16,12 @@ Considering that everybody in the team is developing something else, I have
  
  **Requirements**
  
- Docker all the python packages are described in requirements.txt
+ All the python packages are described in requirements.txt:
+ * Flask;
+ * jsonpickle;
+ * jsonschema;
+ * boto3;
+ * wallet-py3k.
  
  **Usage**
  
