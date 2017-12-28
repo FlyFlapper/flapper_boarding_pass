@@ -233,7 +233,7 @@ class FprPass(Pass):
         with open(self.config.FILES_OUTPUT + '/' + self.file_name, 'rb') as data:
             client.upload_fileobj(data, self.config.S3_BUCKET_NAME, self.folder_name + '/' + self.file_name,
                                   ExtraArgs={'ACL': 'public-read'})
-        os.remove(self.config.FILES_OUTPUT + '/' + self.file_name)
+        #os.remove(self.config.FILES_OUTPUT + '/' + self.file_name)
         print(self.file_name + 'was saved to ' + self.config.S3_BUCKET_NAME + '/' + self.folder_name + '.')
 
 # ---------------------------------------

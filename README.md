@@ -4,15 +4,15 @@ Microservice that generates Flapper boarding passes.
 **Introduction**
 
 So we have this constantly increasing boarding pass issuing demand.
-Considering that everybody in the team is developing something else, I have to
- decided to solve this creating a microservice handling all the tickets
+Considering that everybody in the team is developing something else, I have
+ decided to solve this by creating a microservice handling all the tickets
  and reservation issuing. The solution is simple and looks basically like this:
  
- ![Flapper Passbook Diagram](/readme_files/flapper_passbook.png)
+ ![Flapper Passbook Diagram](/readme_files/flapper_boarding_pass.png)
  
  The result is passbook with Flapper identity:
  
- ![Flapper Passbook Front](/readme_files/passbook_front.png) ![Flapper Passbook Back](/readme_files/passbook_back.png)
+ ![Flapper Passbook Front](/readme_files/boarding_pass_front.png) ![Flapper Passbook Back](/readme_files/boarding_pass_back.png)
  
  **Requirements**
  
@@ -20,5 +20,9 @@ Considering that everybody in the team is developing something else, I have to
  
  **Usage**
  
- Just after installing Docker type the following command inside the project folder:
-  `docker-compose up --build`
+ - Store your certificates in certificate folder;
+ - Define all the parameters in config.py;
+ - After installing Docker please type the following command inside the project folder:
+  `docker-compose up --build`.
+  
+  Note: Flapper logo and name are property of Flapper Tecnologia SA. 
