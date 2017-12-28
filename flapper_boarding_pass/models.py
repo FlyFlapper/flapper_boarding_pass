@@ -116,7 +116,7 @@ class FprBoardingPass(BoardingPass):
         - Departure code;
         - Arrival code;
         - Passenger full name;
-        - Flight date in
+        - Flight date.
         """
         self.barcode = self.departure_code + self.arrival_code + " "\
                        + self.passengers[0].full_name\
@@ -287,3 +287,10 @@ class Location:
         """
         self.latitude = latitude
         self.longitude = longitude
+
+
+class Respose:
+
+    # Constructor
+    def __init__(self):
+        self.content_body = {}
