@@ -308,6 +308,6 @@ class FprResponse:
             self.content_body['result']['status'] = 600
             self.content_body['result']['message'] = 'Json is invalid.'
 
-    def add_object(self, object):
+    def add_object(self, object_dict):
         if isinstance(object, dict):
-            self.content_body['boardingPass'] = object
+            self.content_body['boardingPass'] = object_dict
