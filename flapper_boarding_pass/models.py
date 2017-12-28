@@ -289,7 +289,7 @@ class Location:
         self.longitude = longitude
 
 
-class Respose:
+class FprResponse:
 
     # Constructor
     def __init__(self):

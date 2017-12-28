@@ -5,7 +5,7 @@
 # Time: 21:39
 # --------------------------------------------------
 
-from flapper_boarding_pass.models import FprBoardingPass, FprPass, Respose
+from flapper_boarding_pass.models import FprBoardingPass, FprPass, FprResponse
 from jsonschema import Draft4Validator
 from config import Config
 import json
@@ -18,8 +18,7 @@ class FprBoardingPassController:
 
         :param json_content: Request body as Python object
         """
-        #response_data = None
-        response = Respose()
+        response = FprResponse()
         if self.is_schema_valid(json_content):
             boarding_pass = FprBoardingPass(json_content)
             flapper_pass = FprPass(boarding_pass)
